@@ -9,7 +9,7 @@ SPRITESHEET = "spritesheet_jumper.png"
 
 # Opcje gracza / fizyka
 PLAYER_ACC = 0.5
-PLAYER_FRICTION = -0.12
+PLAYER_FRICTION = -0.04
 PLAYER_GRAV = 0.8
 PLAYER_JUMP = 20
 

@@ -85,7 +85,7 @@ class Game:
             self.playing = False
 
         # tworzenie nowych platform
-        while len(self.platforms) < 6:
+        while len(self.platforms) < 4:
             width = random.randrange(50, 100)
             p = Platform(random.randrange(0, WIDTH - width),
                          random.randrange(-75, -30),
@@ -105,6 +105,13 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump()
+                if event.key == pg.K_ESCAPE: 
+                    if self.playing == True:
+                        self.playing = False
+                        self.show_go_screen()
+
+                               
+                          
 
     def draw(self):
         # rysowanie na ekranie
@@ -119,6 +126,7 @@ class Game:
         self.screen.fill(BGCOLOR)
         self.draw_text(TITLE, 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("Strzałki - Ruch Lewo/Prawo, Spacja - Skok", 22, WHITE, WIDTH / 2, HEIGHT / 2)
+        self.draw_text("ESC - Wyjście do menu, F12 - Wyłączenie gry", 22, WHITE, WIDTH / 2 , HEIGHT / 2 + 25)
         self.draw_text("Naciśnij klawisz aby zagrać", 22, WHITE, WIDTH / 2, HEIGHT * 10 / 14)
         self.draw_text("Twórca: Jakub Jakubiszak", 16, WHITE, WIDTH / 2, HEIGHT * 7 / 8)
         self.draw_text("Muzyka: https://opengameart.org", 16, WHITE, WIDTH / 2, HEIGHT * 15 / 16)
@@ -158,6 +166,10 @@ class Game:
                     waiting = False
                     self.running = False
                 if event.type == pg.KEYUP:
+                    if event.key == pg.K_F12:
+                        waiting = False
+                        self.running = False
+                if event.type == pg.KEYUP:
                     waiting = False
 
     def draw_text(self, text, size, color, x, y):
@@ -167,12 +179,13 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
-        
+
 #uruchamianie obiektu
 g = Game()
 g.show_start_screen()
 while g.running:
     g.new()
     g.show_go_screen()
+                        
 
 pg.quit()
