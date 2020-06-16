@@ -21,6 +21,7 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.image = self.game.spritesheet.get_image(614, 1063, 120, 191)
+        self.jumping = False
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
@@ -28,13 +29,19 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
 
+    def jump_cut(self):
+        if self.jumping:
+            if self.vel.y < -3:
+                self.vel.y = -3    
+
     def jump(self):
         # skakanie tylko na platformie
-        self.rect.y += 1
+        self.rect.y += 2
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
-        self.rect.y -= 1
-        if hits:
+        self.rect.y -= 2
+        if hits and not self.jumping:
             self.game.jump_sound.play()
+            self.jumping = True
             self.vel.y = -PLAYER_JUMP
 
     def update(self):
@@ -60,7 +67,7 @@ class Player(pg.sprite.Sprite):
         self.rect.midbottom = self.pos
 
 class Platform(pg.sprite.Sprite):
-    # ładowanie platform
+    # ładowanie
     def __init__(self, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w, h))
