@@ -1,7 +1,7 @@
+# Sprite classes for platform game
 import pygame as pg
 from opcje import *
 vec = pg.math.Vector2
-
 
 class Spritesheet:
     # ładowanie spritesheetow
@@ -9,7 +9,7 @@ class Spritesheet:
         self.spritesheet = pg.image.load(filename).convert()
 
     def get_image(self, x, y, width, height):
-        # skalowanie obrazu do gry
+        # skalowanie obrazu do gryt
         image = pg.Surface((width, height))
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
         image = pg.transform.scale(image, (width // 2, height // 2))
@@ -21,7 +21,6 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.image = self.game.spritesheet.get_image(614, 1063, 120, 191)
-        self.jumping = False
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
@@ -29,19 +28,13 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
 
-    def jump_cut(self):
-        if self.jumping:
-            if self.vel.y < -3:
-                self.vel.y = -3    
-
     def jump(self):
-        # skakanie tylko na platformie
-        self.rect.y += 2
+        # jump only if standing on a platform
+        self.rect.y += 1
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
-        self.rect.y -= 2
-        if hits and not self.jumping:
+        self.rect.y -= 1
+        if hits:
             self.game.jump_sound.play()
-            self.jumping = True
             self.vel.y = -PLAYER_JUMP
 
     def update(self):
@@ -67,7 +60,7 @@ class Player(pg.sprite.Sprite):
         self.rect.midbottom = self.pos
 
 class Platform(pg.sprite.Sprite):
-    # ładowanie
+    # ładowanie platform
     def __init__(self, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w, h))

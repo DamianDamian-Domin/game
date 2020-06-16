@@ -4,7 +4,6 @@ from opcje import *
 from sprites import *
 from os import path
 
-
 class Game:
     def __init__(self):
         # inicjalizacja gry
@@ -18,7 +17,7 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        # ładowanie high score
+        # ładowanie high scoree
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir, 'img')
         with open(path.join(self.dir, HS_FILE), 'r') as f:
@@ -31,6 +30,8 @@ class Game:
         # ładowanie dźwięków
         self.snd_dir = path.join(self.dir, 'snd')
         self.jump_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Jump.wav'))
+
+
     def new(self):
         # rozpoczęcie nowej gry
         self.score = 0
@@ -47,14 +48,13 @@ class Game:
 
     def run(self):
         # pętla gry
-        pg.mixer.music.play(loops=-1)
+        pg.mixer.music.play()
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
-        pg.mixer.music.fadeout(500)    
 
     def update(self):
         # aktualizacja
@@ -63,14 +63,8 @@ class Game:
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
-                lowest = hits[0]
-                for hit in hits:
-                    if hit.rect.bottom > lowest.rect.bottom:
-                        lowest = hit
-                if self.player.pos.y < lowest.rect.centery:
-                    self.player.pos.y = lowest.rect.top
-                    self.player.vel.y = 0
-                    self.player.jumping = False
+                self.player.pos.y = hits[0].rect.top
+                self.player.vel.y = 0
 
         # przewijanie ekranu
         if self.player.rect.top <= HEIGHT / 4:
@@ -107,14 +101,10 @@ class Game:
                 if self.playing:
                     self.playing = False
                 self.running = False
-            # skakanie    
+            # skakanie     
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
-                    self.player.jump() 
-            if event.type == pg.KEYUP:
-                if event.key == pg.K_SPACE:
-                    self.player.jump_cut()        
-                    
+                    self.player.jump()
 
     def draw(self):
         # rysowanie na ekranie
@@ -128,9 +118,12 @@ class Game:
         # ekran początkowy
         self.screen.fill(BGCOLOR)
         self.draw_text(TITLE, 48, WHITE, WIDTH / 2, HEIGHT / 4)
-        self.draw_text("Arrows to move, Space to jump", 22, WHITE, WIDTH / 2, HEIGHT / 2)
-        self.draw_text("Press a key to play", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
-        self.draw_text("High Score: " + str(self.highscore), 22, WHITE, WIDTH / 2, 15)
+        self.draw_text("Strzałki - Ruch Lewo/Prawo, Spacja - Skok", 22, WHITE, WIDTH / 2, HEIGHT / 2)
+        self.draw_text("Naciśnij klawisz aby zagrać", 22, WHITE, WIDTH / 2, HEIGHT * 10 / 14)
+        self.draw_text("Twórca: Jakub Jakubiszak", 16, WHITE, WIDTH / 2, HEIGHT * 7 / 8)
+        self.draw_text("Muzyka: https://opengameart.org", 16, WHITE, WIDTH / 2, HEIGHT * 15 / 16)
+        self.draw_text("Grafika: https://opengameart.org", 16, WHITE, WIDTH / 2, HEIGHT * 10 / 11)
+        self.draw_text("Najlepszy wynik: " + str(self.highscore), 22, WHITE, WIDTH / 2, 15)
         pg.display.flip()
         self.wait_for_key()
 
@@ -140,15 +133,18 @@ class Game:
             return
         self.screen.fill(BGCOLOR)
         self.draw_text("GAME OVER", 48, WHITE, WIDTH / 2, HEIGHT / 4)
-        self.draw_text("Score: " + str(self.score), 22, WHITE, WIDTH / 2, HEIGHT / 2)
-        self.draw_text("Press a key to play again", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        self.draw_text("Wynik: " + str(self.score), 22, WHITE, WIDTH / 2, HEIGHT / 2)
+        self.draw_text("Naciśnij klawisz aby zagrać ponownie", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        self.draw_text("Twórca: Jakub Jakubiszak", 16, WHITE, WIDTH / 2, HEIGHT * 7 / 8)
+        self.draw_text("Muzyka: https://opengameart.org", 16, WHITE, WIDTH / 2, HEIGHT * 15 / 16)
+        self.draw_text("Grafika: https://opengameart.org", 16, WHITE, WIDTH / 2, HEIGHT * 10 / 11)
         if self.score > self.highscore:
             self.highscore = self.score
-            self.draw_text("NEW HIGH SCORE!", 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
+            self.draw_text("NOWY NAJLEPSZY WYNIK!", 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
             with open(path.join(self.dir, HS_FILE), 'w') as f:
                 f.write(str(self.score))
         else:
-            self.draw_text("High Score: " + str(self.highscore), 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
+            self.draw_text("Najlepszy wynik: " + str(self.highscore), 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
         pg.display.flip()
         self.wait_for_key()
 
@@ -171,8 +167,8 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
-
-#uruchamianie
+        
+#uruchamianie obiektu
 g = Game()
 g.show_start_screen()
 while g.running:
